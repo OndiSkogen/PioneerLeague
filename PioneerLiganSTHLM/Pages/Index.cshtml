@@ -1,0 +1,79 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Pioneer Ligan STHLM";
+
+    var leagueName = Model.LeagueModel.Name;
+    int eventCount = Model.Events.Count;
+    var events = Model.Events;
+    var playerVMs = Model.PlayersVMs.OrderByDescending(p => p.Points);
+    var eventVMs = Model.LeagueEventVMs.OrderBy(d => d.Date);
+}
+
+<div class="row">
+    <div class="col-12 text-center"><h1>Pioneer League STHLM</h1></div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">@leagueName</th>
+                    @foreach (var e in events)
+                    {
+                        <th class="text-end" scope="col">@e.Date.ToString("dd/MM")</th>
+                    }
+                    <th class="text-end" scope="col">Points</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+                    @foreach (var p in playerVMs)
+                    {
+                    <tr>
+                        <th scope="row">@p.Name</th>
+                        @foreach (var result in p.PlayerResults)
+                        {
+                            <td class="text-end">@result</td>
+                        }
+                        <td class="text-end">@p.Points</td>
+                    </tr>
+                }
+                
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="row">
+    @foreach (var e in eventVMs)
+    {
+        <div class="col-12 col-md-6 col-lg-4">
+            @e.Date.ToShortDateString()
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th class="text-end" scope="col">Points</th>
+                        <th class="text-end" scope="col">OGW%</th>
+                        <th class="text-end" scope="col">GW%</th>
+                        <th class="text-end" scope="col">OMW%</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @foreach (var p in e.Results)
+                    {
+                        <tr>
+                            <th scope="row">@p.PlayerName</th>
+                            <td class="text-end">@p.Points</td>
+                            <td class="text-end">@p.OGW</td>
+                            <td class="text-end">@p.GW</td>
+                            <td class="text-end">@p.OMW</td>
+                        </tr>
+                    }
+
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
