@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PioneerLiganSTHLM.Data;
@@ -21,12 +22,7 @@ namespace PioneerLiganSTHLM.Pages.Event
 
         public IActionResult OnGet(string? selectedId)
         {
-            var leagues = from l in _context.League select l;
-            Leagues = leagues.OrderBy(l => l.ID).ToList();
-            var events = from e in _context.Event select e;
-            Events = events.OrderBy(l => l.ID).ToList();
-            var players = from p in _context.Player select p;
-            Players = players.ToList();
+            LoadData();
 
             if (selectedId != null)
             {
@@ -60,6 +56,8 @@ namespace PioneerLiganSTHLM.Pages.Event
                 return Page();
             }
 
+            LoadData();
+
             Event.LeagueID = SelectedLeague;
             _context.Event.Add(Event);
             await _context.SaveChangesAsync();
@@ -87,6 +85,8 @@ namespace PioneerLiganSTHLM.Pages.Event
                     playerToUpdate.Events++;
                     playerToUpdate.Points += eventResult.Points;
 
+                    playerToUpdate = AddWinLossTie(playerToUpdate, eventResult.Points);
+
                     _context.Player.Update(playerToUpdate);
                     await _context.SaveChangesAsync();
 
@@ -103,6 +103,8 @@ namespace PioneerLiganSTHLM.Pages.Event
                     playerToAdd.Events = 1;
                     playerToAdd.Points = eventResult.Points;
 
+                    playerToAdd = AddWinLossTie(playerToAdd, eventResult.Points);
+
                     _context.Player.Add(playerToAdd);
                     await _context.SaveChangesAsync();
 
@@ -115,9 +117,74 @@ namespace PioneerLiganSTHLM.Pages.Event
             return RedirectToPage("./Index");
         }
 
-        private void UpdatePlayer(Models.Player player)
+        private void LoadData()
         {
+            var leagues = from l in _context.League select l;
+            Leagues = leagues.OrderBy(l => l.ID).ToList();
+            var events = from e in _context.Event select e;
+            Events = events.OrderBy(l => l.ID).ToList();
+            var players = from p in _context.Player select p;
+            Players = players.ToList();
+        }
 
+        private Models.Player AddWinLossTie(Models.Player player, int points)
+        {
+            switch (points)
+            {
+                case 0:
+                    player.Losses += 4;
+                    break;
+                case 1:
+                    player.Ties++;
+                    player.Losses += 3;
+                    break;
+                case 2:
+                    player.Ties += 2;
+                    player.Losses += 2;
+                    break;
+                case 3:
+                    player.Wins++;
+                    player.Losses += 3;
+                    break;
+                case 4:
+                    player.Wins++;
+                    player.Ties++;
+                    player.Losses += 2;
+                    break;
+                case 5:
+                    player.Wins++;
+                    player.Ties += 2;
+                    player.Losses++;
+                    break;
+                case 6:
+                    player.Wins += 2;
+                    player.Losses += 2;
+                    break;
+                case 7:
+                    player.Wins += 2;
+                    player.Ties++;
+                    player.Losses++;
+                    break;
+                case 8:
+                    player.Wins += 2;
+                    player.Ties += 2;
+                    break;
+                case 9:
+                    player.Wins += 3;
+                    player.Losses++;
+                    break;
+                case 10:
+                    player.Wins += 3;
+                    player.Ties++;
+                    break;
+                case 12:
+                    player.Wins += 4;
+                    break;
+                default:
+                    break;
+            }
+
+            return player;
         }
 
         public string NamePlayer(int id)

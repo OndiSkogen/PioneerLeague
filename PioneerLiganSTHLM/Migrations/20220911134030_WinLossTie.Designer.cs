@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PioneerLiganSTHLM.Data;
 
@@ -11,9 +12,10 @@ using PioneerLiganSTHLM.Data;
 namespace PioneerLiganSTHLM.Migrations
 {
     [DbContext(typeof(PioneerLiganSTHLMContext))]
-    partial class PioneerLiganSTHLMContextModelSnapshot : ModelSnapshot
+    [Migration("20220911134030_WinLossTie")]
+    partial class WinLossTie
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
