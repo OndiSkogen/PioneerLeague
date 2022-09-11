@@ -41,6 +41,7 @@ namespace PioneerLiganSTHLM.Pages.Event
             return Page();
         }
 
+        [BindProperty]
         public Models.Event Event { get; set; } = default!;
         public List<Models.Event> Events { get; set; } = new List<Models.Event>();
         public List<Models.Event> DisplayEvents { get; set; } = new List<Models.Event>();
@@ -52,37 +53,71 @@ namespace PioneerLiganSTHLM.Pages.Event
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-            if (!ModelState.IsValid || _context.Event == null || _context.EventResult == null)
+            SelectedLeague = int.Parse(Request.Form["league-id"]);
+
+            if (!ModelState.IsValid || _context.Event == null || _context.EventResult == null || _context.Player == null || SelectedLeague == 0)
             {
                 return Page();
             }
 
-            for (int i = 0; i < 32; i++)
+            Event.LeagueID = SelectedLeague;
+            _context.Event.Add(Event);
+            await _context.SaveChangesAsync();
+
+            for (int i = 1; i < 33; i++)
             {
                 if (Request.Form["player" + i] == string.Empty)
                 {
                     continue;
                 }
+                
                 var eventResult = new Models.EventResult();
                 eventResult.PlayerName = Request.Form["player" + i];
+                eventResult.Points = int.Parse(Request.Form["points" + i]);
                 eventResult.OMW = float.Parse(Request.Form["omw" + i]);
                 eventResult.GW = float.Parse(Request.Form["gw" + i]);
                 eventResult.OGW = float.Parse(Request.Form["ogw" + i]);
                 eventResult.Placement = int.Parse(Request.Form["placement" + i]);
+                eventResult.EventId = Event.ID;
 
                 var playerExists = Players.Where(n => n.Name == eventResult.PlayerName).ToList();
                 if (playerExists.Any())
                 {
-                    eventResult.PlayerId = playerExists.First().ID;
+                    var playerToUpdate = playerExists.First();
+                    playerToUpdate.Events++;
+                    playerToUpdate.Points += eventResult.Points;
+
+                    _context.Player.Update(playerToUpdate);
+                    await _context.SaveChangesAsync();
+
+                    eventResult.PlayerId = playerToUpdate.ID;
+
+                    _context.EventResult.Add(eventResult);
+                    await _context.SaveChangesAsync();
+                }
+                else
+                {
+                    var playerToAdd = new Models.Player();
+
+                    playerToAdd.Name = eventResult.PlayerName;
+                    playerToAdd.Events = 1;
+                    playerToAdd.Points = eventResult.Points;
+
+                    _context.Player.Add(playerToAdd);
+                    await _context.SaveChangesAsync();
+
+                    eventResult.PlayerId = playerToAdd.ID;
                     _context.EventResult.Add(eventResult);
                     await _context.SaveChangesAsync();
                 }
             }
 
-            //_context.Event.Add(Event);
-            //await _context.SaveChangesAsync();
-
             return RedirectToPage("./Index");
+        }
+
+        private void UpdatePlayer(Models.Player player)
+        {
+
         }
 
         public string NamePlayer(int id)
@@ -112,6 +147,12 @@ namespace PioneerLiganSTHLM.Pages.Event
         public string PlacementPlayer(int id)
         {
             var str = "placement" + id.ToString();
+            return str;
+        }
+
+        public string PointsPlayer(int id)
+        {
+            var str = "points" + id.ToString();
             return str;
         }
     }

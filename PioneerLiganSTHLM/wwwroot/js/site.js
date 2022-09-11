@@ -5,7 +5,7 @@
 
 $("#select-league").on("change", function () {
     var selectedId = $(this).val();
-    alert(window.location.href);
+    
     window.location.href = window.location.href + '?selectedId=' + selectedId;
 });
 
