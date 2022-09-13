@@ -46,7 +46,7 @@ namespace PioneerLiganSTHLM.Pages
                 tempResults.AddRange(eventResults.Where(i => i.EventId == ev.ID).OrderBy(p => p.Placement));
                 Results.AddRange(eventResults.Where(i => i.EventId == ev.ID).OrderBy(p => p.Placement));
 
-                LeagueEventVMs.Add(new ViewModels.LeagueEvent { Date = ev.Date, LeagueID = ev.LeagueID, EventNumber = ev.EventNumber, Results = tempResults });
+                LeagueEventVMs.Add(new ViewModels.LeagueEvent { Date = ev.Date, LeagueID = ev.LeagueID, EventNumber = ev.EventNumber, Results = tempResults, cssId = "collapse" + ev.ID });
             }
 
             foreach (var player in Players)
