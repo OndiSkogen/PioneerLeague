@@ -2,6 +2,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using PioneerLiganSTHLM.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using PioneerLiganSTHLM.Areas.Identity.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -9,8 +12,15 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<PioneerLiganSTHLMContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("PioneerLiganSTHLMContext") ?? throw new InvalidOperationException("Connection string 'PioneerLiganSTHLMContext' not found.")));
 
-builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
     .AddEntityFrameworkStores<PioneerLiganSTHLMContext>();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+});
 
 var app = builder.Build();
 

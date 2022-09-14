@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -11,6 +12,7 @@ using PioneerLiganSTHLM.Models;
 
 namespace PioneerLiganSTHLM.Pages.Event
 {
+    //[Authorize]
     public class CreateModel : PageModel
     {
         private readonly PioneerLiganSTHLMContext _context;
@@ -20,6 +22,7 @@ namespace PioneerLiganSTHLM.Pages.Event
             _context = context;
         }
 
+        
         public IActionResult OnGet(string? selectedId)
         {
             LoadData();

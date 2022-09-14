@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PioneerLiganSTHLM.Data;
@@ -6,6 +7,7 @@ using System.Linq;
 
 namespace PioneerLiganSTHLM.Pages
 {
+    [AllowAnonymous]
     public class IndexModel : PageModel
     {
         private readonly PioneerLiganSTHLMContext _context;
