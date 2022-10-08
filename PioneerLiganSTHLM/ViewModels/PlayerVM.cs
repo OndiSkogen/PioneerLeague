@@ -9,5 +9,9 @@
         public int Wins { get; set; } = 0;
         public int Losses { get; set; } = 0;
         public int Ties { get; set; } = 0;
+        public int FourZero { get; set; } = 0;
+        public int ThreeZeroOne { get; set; } = 0;
+        public int ThreeOne { get; set; } = 0;
+        public int TuTu { get; set; } = 0;
     }
 }

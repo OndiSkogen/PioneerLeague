@@ -413,9 +413,15 @@ table {
 
 #logo-sthlm {
     font-size: 62px;
-    height: 100px;
+    height: 80px;
 }
 
 #table-pos {
     width: 10px;
+}
+
+ol {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
 }

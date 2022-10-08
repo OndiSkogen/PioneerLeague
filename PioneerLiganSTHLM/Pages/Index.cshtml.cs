@@ -69,6 +69,7 @@ namespace PioneerLiganSTHLM.Pages
                     {
                         tempPlayer.PlayerResults.Add(er.First().Points.ToString());
                         tempPlayer.Points += er.First().Points;
+                        tempPlayer = AddTieBreakers(tempPlayer, er.First().Points);
                     }
                     else
                     {
@@ -76,7 +77,32 @@ namespace PioneerLiganSTHLM.Pages
                     }
                 }
                 PlayersVMs.Add(tempPlayer);
+                PlayersVMs = PlayersVMs.OrderByDescending(p => p.Points).ThenByDescending(p => p.FourZero).ThenByDescending(p => p.ThreeZeroOne)
+                    .ThenByDescending(p => p.ThreeOne).ThenByDescending(p => p.TuTu).ThenByDescending(p => p.Events).ToList();
             }
+        }
+
+        private ViewModels.PlayerVM AddTieBreakers(ViewModels.PlayerVM player, int points)
+        {
+            switch (points)
+            {
+                case 6:
+                    player.TuTu++;
+                    break;
+                case 9:
+                    player.ThreeOne++;
+                    break;
+                case 10:
+                    player.ThreeZeroOne++;
+                    break;
+                case 12:
+                    player.FourZero++;
+                    break;
+                default:
+                    break;
+            }
+
+            return player;
         }
     }
 }
