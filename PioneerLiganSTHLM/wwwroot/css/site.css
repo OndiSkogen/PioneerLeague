@@ -364,9 +364,9 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
-  background-color: #000;
-  color: #FFF;
+    margin-bottom: 60px;
+    background-color: #212529; /*#000;*/
+    color: #FFF;
 }
 
 table {
@@ -388,13 +388,13 @@ table {
 }
 
 .event-table {
-    border: 3px solid #000;
+    border: 3px solid #2c3034;
     border-radius: 10px;
     background-color: #8c8d8f;
 }
 
 .main-event-table {
-    border: 3px solid #000;
+    border: 3px solid #2c3034;
     border-radius: 10px;
     background-color: #8c8d8f;
     padding-top: 12px;
@@ -424,4 +424,18 @@ ol {
     list-style-type: none;
     margin: 0;
     padding: 0;
+}
+
+.container {
+    background-color: #2c3034;
+}
+
+.gutters {
+    padding: 0 20px;
+}
+
+@media screen and (max-width: 768px) {
+    .hide-in-mobile {
+        display: none;
+    }
 }
