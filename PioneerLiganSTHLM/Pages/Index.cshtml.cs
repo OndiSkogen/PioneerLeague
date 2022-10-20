@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using PioneerLiganSTHLM.Data;
+using PioneerLiganSTHLM.HelperClasses;
 using System.Linq;
 
 namespace PioneerLiganSTHLM.Pages
@@ -53,12 +54,13 @@ namespace PioneerLiganSTHLM.Pages
 
             foreach (var player in Players)
             {
+                int id = 0;
                 ViewModels.PlayerVM tempPlayer = new ViewModels.PlayerVM
                 {                   
                     Name = player.Name,
                     Events = player.Events,
                     Points = 0,
-                    PlayerResults = new List<string>()
+                    PlayerResults = new List<ResultObject>()
                 };
 
                 foreach (var ev in Events)
@@ -67,17 +69,19 @@ namespace PioneerLiganSTHLM.Pages
 
                     if (er.Any())
                     {
-                        tempPlayer.PlayerResults.Add(er.First().Points.ToString());
+                        tempPlayer.PlayerResults.Add(new ResultObject(id, er.First().Points, true, true));
                         tempPlayer.Points += er.First().Points;
                         tempPlayer = AddTieBreakers(tempPlayer, er.First().Points);
                     }
                     else
                     {
-                        tempPlayer.PlayerResults.Add("-");
+                        tempPlayer.PlayerResults.Add(new ResultObject(id, 0, true, false));
                     }
+                    id++;
                 }
+                tempPlayer = CalculatePoints(tempPlayer);
                 PlayersVMs.Add(tempPlayer);
-                PlayersVMs = PlayersVMs.OrderByDescending(p => p.Points).ThenByDescending(p => p.FourZero).ThenByDescending(p => p.ThreeZeroOne)
+                PlayersVMs = PlayersVMs.OrderByDescending(p => p.DiscountedPoints).ThenByDescending(p => p.FourZero).ThenByDescending(p => p.ThreeZeroOne)
                     .ThenByDescending(p => p.ThreeOne).ThenByDescending(p => p.TuTu).ThenByDescending(p => p.Events).ToList();
             }
         }
@@ -103,6 +107,28 @@ namespace PioneerLiganSTHLM.Pages
             }
 
             return player;
+        }
+
+        private ViewModels.PlayerVM CalculatePoints(ViewModels.PlayerVM tempPlayer)
+        {
+            int res;
+            List<ResultObject> tmp = tempPlayer.PlayerResults;
+            tmp = tmp.OrderBy(p => p.Result).ToList();
+            tmp = tmp.Take(6).ToList();
+            foreach (var r in tempPlayer.PlayerResults)
+            {
+                if (tmp.Contains(r))
+                {
+                    r.CountThis = false;
+                }
+
+                if (r.CountThis)
+                {
+                    tempPlayer.DiscountedPoints += r.Result;
+                }
+            }
+
+            return tempPlayer;
         }
     }
 }
