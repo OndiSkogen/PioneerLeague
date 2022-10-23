@@ -18,72 +18,76 @@ namespace PioneerLiganSTHLM.Pages
             _context = context;
         }
 
-        [BindProperty]
-        public ViewModels.League League { get; set; } = new ViewModels.League();
-        public Models.League LeagueModel { get; set; } = new Models.League();
-        public List<Models.Event> Events { get; set; } = new List<Models.Event>();
-        public List<Models.Player> Players { get; set; } = new List<Models.Player>();
-        public List<Models.EventResult> Results { get; set; } = new List<Models.EventResult>();
-        public List<ViewModels.PlayerVM> PlayersVMs { get; set; } = new List<ViewModels.PlayerVM>();
-        public List<ViewModels.LeagueEvent> LeagueEventVMs { get; set; } = new List<ViewModels.LeagueEvent>();
+        public List<ViewModels.League> Leagues { get; set; } = new List<ViewModels.League>();
+        public List<Models.League> LeagueModels { get; set; } = new List<Models.League>();
 
         public void OnGet()
         {
             if (_context.League != null)
             {
-                LeagueModel = _context.League.First();
-            }
+                LeagueModels = _context.League.OrderByDescending(i => i.ID).ToList();
 
-            var events = from e in _context.Event select e;
-            Events = events.Where(i => i.LeagueID == LeagueModel.ID).OrderBy(ev => ev.EventNumber).ToList();
-
-            var eventResults = from e in _context.EventResult select e;
-
-            var players = from p in _context.Player select p;
-            Players = players.ToList();
-
-            foreach (var ev in Events)
-            {
-                var tempResults = new List<Models.EventResult>();
-
-                tempResults.AddRange(eventResults.Where(i => i.EventId == ev.ID).OrderBy(p => p.Placement));
-                Results.AddRange(eventResults.Where(i => i.EventId == ev.ID).OrderBy(p => p.Placement));
-
-                LeagueEventVMs.Add(new ViewModels.LeagueEvent { Date = ev.Date, LeagueID = ev.LeagueID, EventNumber = ev.EventNumber, Results = tempResults, cssId = "collapse" + ev.ID });
-            }
-
-            foreach (var player in Players)
-            {
-                int id = 0;
-                ViewModels.PlayerVM tempPlayer = new ViewModels.PlayerVM
-                {                   
-                    Name = player.Name,
-                    Events = player.Events,
-                    Points = 0,
-                    PlayerResults = new List<ResultObject>()
-                };
-
-                foreach (var ev in Events)
+                foreach (var league in LeagueModels)
                 {
-                    var er = Results.Where(i => i.PlayerId == player.ID && i.EventId == ev.ID);
+                    var tempLeague = new ViewModels.League();
+                    tempLeague.LeagueModel = league;
 
-                    if (er.Any())
+                    var events = from e in _context.Event select e;
+                    tempLeague.Events = events.Where(i => i.LeagueID == league.ID).OrderBy(ev => ev.EventNumber).ToList();
+
+                    var eventResults = from e in _context.EventResult select e;
+
+                    var players = from p in _context.Player select p;
+                    tempLeague.Players = players.ToList();
+
+                    foreach (var ev in tempLeague.Events)
                     {
-                        tempPlayer.PlayerResults.Add(new ResultObject(id, er.First().Points, true, true));
-                        tempPlayer.Points += er.First().Points;
-                        tempPlayer = AddTieBreakers(tempPlayer, er.First().Points);
+                        var tempResults = new List<Models.EventResult>();
+
+                        tempResults.AddRange(eventResults.Where(i => i.EventId == ev.ID).OrderBy(p => p.Placement));
+                        tempLeague.Results.AddRange(eventResults.Where(i => i.EventId == ev.ID).OrderBy(p => p.Placement));
+
+                        tempLeague.LeagueEventVMs.Add(new ViewModels.LeagueEvent { Date = ev.Date, LeagueID = ev.LeagueID, EventNumber = ev.EventNumber, Results = tempResults, cssId = "collapse" + ev.ID });
                     }
-                    else
+
+                    tempLeague.LeagueEventVMs = tempLeague.LeagueEventVMs.OrderBy(d => d.Date).ToList();
+
+                    foreach (var player in tempLeague.Players)
                     {
-                        tempPlayer.PlayerResults.Add(new ResultObject(id, 0, true, false));
+                        int id = 0;
+                        ViewModels.PlayerVM tempPlayer = new ViewModels.PlayerVM
+                        {
+                            Name = player.Name,
+                            Events = player.Events,
+                            Points = 0,
+                            PlayerResults = new List<ResultObject>()
+                        };
+
+                        foreach (var ev in tempLeague.Events)
+                        {
+                            var er = tempLeague.Results.Where(i => i.PlayerId == player.ID && i.EventId == ev.ID);
+
+                            if (er.Any())
+                            {
+                                tempPlayer.PlayerResults.Add(new ResultObject(id, er.First().Points, true, true));
+                                tempPlayer.Points += er.First().Points;
+                                tempPlayer = AddTieBreakers(tempPlayer, er.First().Points);
+                            }
+                            else
+                            {
+                                tempPlayer.PlayerResults.Add(new ResultObject(id, 0, true, false));
+                            }
+                            id++;
+                        }
+                        tempPlayer = CalculatePoints(tempPlayer);
+                        tempLeague.PlayersVMs.Add(tempPlayer);
+                        tempLeague.PlayersVMs = tempLeague.PlayersVMs.OrderByDescending(p => p.DiscountedPoints).ThenByDescending(p => p.FourZero).ThenByDescending(p => p.ThreeZeroOne)
+                            .ThenByDescending(p => p.ThreeOne).ThenByDescending(p => p.TuTu).ThenByDescending(p => p.Events).ToList();
                     }
-                    id++;
+
+                    Leagues.Add(tempLeague);
                 }
-                tempPlayer = CalculatePoints(tempPlayer);
-                PlayersVMs.Add(tempPlayer);
-                PlayersVMs = PlayersVMs.OrderByDescending(p => p.DiscountedPoints).ThenByDescending(p => p.FourZero).ThenByDescending(p => p.ThreeZeroOne)
-                    .ThenByDescending(p => p.ThreeOne).ThenByDescending(p => p.TuTu).ThenByDescending(p => p.Events).ToList();
-            }
+            }            
         }
 
         private ViewModels.PlayerVM AddTieBreakers(ViewModels.PlayerVM player, int points)
@@ -111,7 +115,6 @@ namespace PioneerLiganSTHLM.Pages
 
         private ViewModels.PlayerVM CalculatePoints(ViewModels.PlayerVM tempPlayer)
         {
-            int res;
             List<ResultObject> tmp = tempPlayer.PlayerResults;
             tmp = tmp.OrderBy(p => p.Result).ToList();
             tmp = tmp.Take(6).ToList();

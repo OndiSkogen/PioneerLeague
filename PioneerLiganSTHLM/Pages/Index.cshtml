@@ -3,12 +3,13 @@
 @{
     ViewData["Title"] = "Pioneerligan STHLM";
 
-    var leagueName = Model.LeagueModel.Name;
-    int eventCount = Model.Events.Count;
-    var events = Model.Events;
-    var playerVMs = Model.PlayersVMs;
-    var eventVMs = Model.LeagueEventVMs.OrderBy(d => d.Date);
+    //var leagueName = Model.LeagueModels.Name;
+    //int eventCount = Model.Events.Count;
+    //var events = Model.Events;
+    //var playerVMs = Model.PlayersVMs;
+    //var eventVMs = Model.LeagueEventVMs.OrderBy(d => d.Date);
     int count = 1;
+    var leagues = Model.Leagues;
 }
 
 <div class="row">
@@ -50,131 +51,137 @@
         <i>(results in pink are NOT counted)</i>
     </div>
 </div>
-<div class="row">
-    <div class="col-12 main-event-table">
-        <h2>@leagueName</h2>
-        <table class="table table-striped table-dark table-responsive-stack" id="tableOne">
-            <thead>
-                <tr>
-                    <th id="table-pos" scope="col">#</th>
-                    <th scope="col">Player Name</th>
-                    @foreach (var e in events)
-                    {
-                        <th class="text-end hide-in-mobile" scope="col">@e.Date.ToString("dd/MM")</th>
-                    }
-                    <th class="text-end" scope="col">Points</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var p in playerVMs)
-                {
-                    @if (count < 17)
-                    {
-                        <tr>
-                            <th class="green-text" scope="row">@count</th>
-                            <th class="green-text" scope="row">@p.Name</th>
-                            @foreach (var result in p.PlayerResults)
-                            {
-                                @if (result.CountThis) 
-                                {
-                                    @if (result.PlayedEvent)
-                                    {
-                                        <td class="text-end hide-in-mobile">@result.Result</td>
-                                    }
-                                    else
-                                    {
-                                        <td class="text-end hide-in-mobile">-</td>
-                                    }
-                                }
-                                else 
-                                {
-                                    @if (result.PlayedEvent)
-                                    {
-                                        <td class="text-end hide-in-mobile pink-text">(@result.Result)</td>
-                                    }
-                                    else
-                                    {
-                                        <td class="text-end hide-in-mobile pink-text">(-)</td>
-                                    }
-                                }                                
-                            }
-                            <td class="text-end">@p.DiscountedPoints <span class="pink-text">(@p.Points)</span></td>
-                        </tr>
-                    }
-                    else
-                    {
-                        <tr>
-                            <th class="blue-text" scope="row">@count</th>
-                            <th class="blue-text" scope="row">@p.Name</th>
-                            @foreach (var result in p.PlayerResults)
-                            {
-                                @if (result.CountThis)
-                                {
-                                    @if (result.PlayedEvent) 
-                                    {
-                                        <td class="text-end hide-in-mobile">@result.Result</td>
-                                    }
-                                    else 
-                                    {
-                                        <td class="text-end hide-in-mobile">-</td>
-                                    }
-                                }
-                                else
-                                {
-                                    @if (result.PlayedEvent) 
-                                    {
-                                        <td class="text-end hide-in-mobile pink-text">(@result.Result)</td>
-                                    }
-                                    else
-                                    {
-                                        <td class="text-end hide-in-mobile pink-text">(-)</td>
-                                    }                                        
-                                }
-                            }
-                            <td class="text-end">@p.DiscountedPoints <span class="pink-text">(@p.Points)</span></td>
-                        </tr>
-                    }
-                    count++;
-                }
-            </tbody>
-        </table>
-    </div>
-</div>
-<div class="row">
-    <i>(Click to see event results)</i>
-</div>
-<div class="row">
-    @foreach (var e in eventVMs)
+@foreach (var league in leagues)
+{
     {
-        <div class="col-sm-12 col-md-6 col-lg-4 event-table">
-            <span onclick="Collapser(this)" class="event-header">League event: @e.Date.ToShortDateString()</span>
-            <div id="@e.cssId" class="hideElement">
-                <table class="table table-striped table-dark">
-                    <thead>
-                        <tr>
-                            <th scope="col">Name</th>
-                            <th class="text-end" scope="col">Points</th>
-                            <th class="text-end" scope="col">OMW%</th>
-                            <th class="text-end" scope="col">GW%</th>
-                            <th class="text-end" scope="col">OGW%</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-
-                        @foreach (var p in e.Results)
+        count = 1;
+    }
+    <div class="row">
+        <div class="col-12 main-event-table">
+            <h2>@league.LeagueModel.Name</h2>
+            <table class="table table-striped table-dark table-responsive-stack" id="tableOne">
+                <thead>
+                    <tr>
+                        <th id="table-pos" scope="col">#</th>
+                        <th scope="col">Player Name</th>
+                        @foreach (var e in league.Events)
+                        {
+                            <th class="text-end hide-in-mobile" scope="col">@e.Date.ToString("dd/MM")</th>
+                        }
+                        <th class="text-end" scope="col">Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var p in league.PlayersVMs)
+                    {
+                        @if (count < 17)
                         {
                             <tr>
-                                <th scope="row">@p.PlayerName</th>
-                                <td class="text-end">@p.Points</td>
-                                <td class="text-end">@p.OMW</td>
-                                <td class="text-end">@p.GW</td>
-                                <td class="text-end">@p.OGW</td>
+                                <th class="green-text" scope="row">@count</th>
+                                <th class="green-text" scope="row">@p.Name</th>
+                                @foreach (var result in p.PlayerResults)
+                                {
+                                    @if (result.CountThis)
+                                    {
+                                        @if (result.PlayedEvent)
+                                        {
+                                            <td class="text-end hide-in-mobile">@result.Result</td>
+                                        }
+                                        else
+                                        {
+                                            <td class="text-end hide-in-mobile">-</td>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @if (result.PlayedEvent)
+                                        {
+                                            <td class="text-end hide-in-mobile pink-text">(@result.Result)</td>
+                                        }
+                                        else
+                                        {
+                                            <td class="text-end hide-in-mobile pink-text">(-)</td>
+                                        }
+                                    }
+                                }
+                                <td class="text-end">@p.DiscountedPoints <span class="pink-text">(@p.Points)</span></td>
                             </tr>
                         }
-
-                    </tbody>
-                </table>
-            </div>
+                        else
+                        {
+                            <tr>
+                                <th class="blue-text" scope="row">@count</th>
+                                <th class="blue-text" scope="row">@p.Name</th>
+                                @foreach (var result in p.PlayerResults)
+                                {
+                                    @if (result.CountThis)
+                                    {
+                                        @if (result.PlayedEvent)
+                                        {
+                                            <td class="text-end hide-in-mobile">@result.Result</td>
+                                        }
+                                        else
+                                        {
+                                            <td class="text-end hide-in-mobile">-</td>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @if (result.PlayedEvent)
+                                        {
+                                            <td class="text-end hide-in-mobile pink-text">(@result.Result)</td>
+                                        }
+                                        else
+                                        {
+                                            <td class="text-end hide-in-mobile pink-text">(-)</td>
+                                        }
+                                    }
+                                }
+                                <td class="text-end">@p.DiscountedPoints <span class="pink-text">(@p.Points)</span></td>
+                            </tr>
+                        }
+                        count++;
+                    }
+                </tbody>
+            </table>
         </div>
-    }
-</div>
+    </div>
+    <div class="row">
+        <i>(Click to see event results)</i>
+    </div>
+    <div class="row mb-5">
+        @foreach (var e in league.LeagueEventVMs)
+        {
+            <div class="col-sm-12 col-md-6 col-lg-4 event-table">
+                <span onclick="Collapser(this)" class="event-header">League event: @e.Date.ToShortDateString()</span>
+                <div id="@e.cssId" class="hideElement">
+                    <table class="table table-striped table-dark">
+                        <thead>
+                            <tr>
+                                <th scope="col">Name</th>
+                                <th class="text-end" scope="col">Points</th>
+                                <th class="text-end" scope="col">OMW%</th>
+                                <th class="text-end" scope="col">GW%</th>
+                                <th class="text-end" scope="col">OGW%</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            @foreach (var p in e.Results)
+                            {
+                                <tr>
+                                    <th scope="row">@p.PlayerName</th>
+                                    <td class="text-end">@p.Points</td>
+                                    <td class="text-end">@p.OMW</td>
+                                    <td class="text-end">@p.GW</td>
+                                    <td class="text-end">@p.OGW</td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+}
