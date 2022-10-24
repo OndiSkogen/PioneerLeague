@@ -59,8 +59,13 @@ namespace PioneerLiganSTHLM.Pages
                         {
                             Name = player.Name,
                             Events = player.Events,
-                            Points = 0,
-                            PlayerResults = new List<ResultObject>()
+                            CurrentLeaguePoints = 0,
+                            PlayerResults = new List<ResultObject>(),
+                            LifeTimePoints = player.Points,
+                            Wins = player.Wins,
+                            Ties = player.Ties,
+                            Losses = player.Losses,
+                            AvgPoints = player.Points / (double)player.Events
                         };
 
                         foreach (var ev in tempLeague.Events)
@@ -70,7 +75,7 @@ namespace PioneerLiganSTHLM.Pages
                             if (er.Any())
                             {
                                 tempPlayer.PlayerResults.Add(new ResultObject(id, er.First().Points, true, true));
-                                tempPlayer.Points += er.First().Points;
+                                tempPlayer.CurrentLeaguePoints += er.First().Points;
                                 tempPlayer = AddTieBreakers(tempPlayer, er.First().Points);
                             }
                             else

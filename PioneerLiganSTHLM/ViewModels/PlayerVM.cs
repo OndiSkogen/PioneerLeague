@@ -6,7 +6,7 @@ namespace PioneerLiganSTHLM.ViewModels
     {
         public string Name { get; set; } = String.Empty;
         public int Events { get; set; } = 0;
-        public int Points { get; set; } = 0;
+        public int CurrentLeaguePoints { get; set; } = 0;
         public int DiscountedPoints { get; set; } = 0;
         public List<ResultObject> PlayerResults { get; set; } = new List<ResultObject>();
         public int Wins { get; set; } = 0;
@@ -16,5 +16,7 @@ namespace PioneerLiganSTHLM.ViewModels
         public int ThreeZeroOne { get; set; } = 0;
         public int ThreeOne { get; set; } = 0;
         public int TuTu { get; set; } = 0;
+        public int LifeTimePoints { get; set; } = 0;
+        public double AvgPoints { get; set; } = 0;
     }
 }

@@ -74,7 +74,13 @@
                             <tr>
                                 <th class="green-text" scope="row">@count</th>
                                 <th scope="row"><a href="#" class="player-stats green-text" data-bs-toggle="tooltip" data-bs-html="true" 
-                                    data-bs-title="@p.Points">@p.Name</a></th>
+                                    data-bs-title="Lifetime stats:<br>
+                                                   Points: @p.LifeTimePoints <br>
+                                                    Wins: @p.Wins <br>
+                                                    Ties: @p.Ties <br>
+                                                    Losses: @p.Losses <br>
+                                                    Average points: @p.AvgPoints">@p.Name</a>
+                                </th>
                                 @foreach (var result in p.PlayerResults)
                                 {
                                     @if (result.CountThis)
@@ -100,7 +106,7 @@
                                         }
                                     }
                                 }
-                                <td class="text-end">@p.DiscountedPoints <span class="pink-text">(@p.Points)</span></td>
+                                <td class="text-end">@p.DiscountedPoints <span class="pink-text">(@p.CurrentLeaguePoints)</span></td>
                             </tr>
                         }
                         else
@@ -133,7 +139,7 @@
                                         }
                                     }
                                 }
-                                <td class="text-end">@p.DiscountedPoints <span class="pink-text">(@p.Points)</span></td>
+                                <td class="text-end">@p.DiscountedPoints <span class="pink-text">(@p.CurrentLeaguePoints)</span></td>
                             </tr>
                         }
                         count++;
