@@ -3,11 +3,6 @@
 @{
     ViewData["Title"] = "Pioneerligan STHLM";
 
-    //var leagueName = Model.LeagueModels.Name;
-    //int eventCount = Model.Events.Count;
-    //var events = Model.Events;
-    //var playerVMs = Model.PlayersVMs;
-    //var eventVMs = Model.LeagueEventVMs.OrderBy(d => d.Date);
     int count = 1;
     var leagues = Model.Leagues;
 }
@@ -78,7 +73,8 @@
                         {
                             <tr>
                                 <th class="green-text" scope="row">@count</th>
-                                <th class="green-text" scope="row">@p.Name</th>
+                                <th scope="row"><a href="#" class="player-stats green-text" data-bs-toggle="tooltip" data-bs-html="true" 
+                                    data-bs-title="@p.Points">@p.Name</a></th>
                                 @foreach (var result in p.PlayerResults)
                                 {
                                     @if (result.CountThis)
@@ -111,7 +107,7 @@
                         {
                             <tr>
                                 <th class="blue-text" scope="row">@count</th>
-                                <th class="blue-text" scope="row">@p.Name</th>
+                                <th scope="row"><a href="#" class="player-stats blue-text" data-bs-toggle="tooltip" data-bs-title="The last tip!">@p.Name</a></th>
                                 @foreach (var result in p.PlayerResults)
                                 {
                                     @if (result.CountThis)

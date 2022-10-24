@@ -433,16 +433,20 @@ ol {
     padding: 0 20px;
 }
 
-.green-text {
+.green-text, .green-text:hover {
     color: #099383;
 }
 
-.blue-text {
+.blue-text, .blue-text:hover {
     color: #166b8c;
 }
 
 .pink-text {
     color:hotpink;
+}
+
+.player-stats {
+    text-decoration: none;
 }
 
 @media screen and (max-width: 768px) {
