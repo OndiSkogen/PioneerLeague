@@ -4,7 +4,9 @@
     ViewData["Title"] = "Pioneerligan STHLM";
 
     int count = 1;
-    var leagues = Model.Leagues;
+    var leagues = Model.LeagueVMs;
+
+    
 }
 
 <div class="row">
@@ -42,9 +44,9 @@
             <li>Playoff match</li>
         </ol>
     </div>
-    <div class="col-sm-6 col-12 pink-text">
-        <i>(results in pink are NOT counted)</i>
-    </div>
+    @*<div class="col-sm-6 col-12 pink-text">
+    <i>(results in pink are NOT counted)</i>
+    </div>*@
 </div>
 @foreach (var league in leagues)
 {
@@ -53,7 +55,7 @@
     }
     <div class="row">
         <div class="col-12 main-event-table">
-            <h2>@league.LeagueModel.Name</h2>
+            <h2>@league.Name</h2>
             <table class="table table-striped table-dark table-responsive-stack" id="tableOne">
                 <thead>
                     <tr>
@@ -73,13 +75,8 @@
                         {
                             <tr>
                                 <th class="green-text" scope="row">@count</th>
-                                <th scope="row"><a href="#" class="player-stats green-text" data-bs-toggle="tooltip" data-bs-html="true" 
-                                    data-bs-title="Lifetime stats:<br>
-                                                   Points: @p.LifeTimePoints <br>
-                                                    Wins: @p.Wins <br>
-                                                    Ties: @p.Ties <br>
-                                                    Losses: @p.Losses <br>
-                                                    Average points: @p.AvgPoints">@p.Name</a>
+                                <th scope="row">
+                                    @p.StatBox
                                 </th>
                                 @foreach (var result in p.PlayerResults)
                                 {
@@ -98,22 +95,25 @@
                                     {
                                         @if (result.PlayedEvent)
                                         {
-                                            <td class="text-end hide-in-mobile pink-text">(@result.Result)</td>
+                                            <td class="text-end hide-in-mobile">(@result.Result)</td>
                                         }
                                         else
                                         {
-                                            <td class="text-end hide-in-mobile pink-text">(-)</td>
+                                            <td class="text-end hide-in-mobile">(-)</td>
                                         }
                                     }
                                 }
-                                <td class="text-end">@p.DiscountedPoints <span class="pink-text">(@p.CurrentLeaguePoints)</span></td>
+                                <td class="text-end">@p.DiscountedPoints @*<span class="pink-text">(@p.CurrentLeaguePoints)</span>*@</td>
                             </tr>
                         }
                         else
                         {
                             <tr>
                                 <th class="blue-text" scope="row">@count</th>
-                                <th scope="row"><a href="#" class="player-stats blue-text" data-bs-toggle="tooltip" data-bs-title="The last tip!">@p.Name</a></th>
+                                <th scope="row">
+                                    <a href="#" class="player-stats blue-text" data-bs-toggle="tooltip" data-bs-html="true"
+                           data-bs-title="XXX">@p.Name</a>
+                                </th>
                                 @foreach (var result in p.PlayerResults)
                                 {
                                     @if (result.CountThis)
@@ -131,15 +131,15 @@
                                     {
                                         @if (result.PlayedEvent)
                                         {
-                                            <td class="text-end hide-in-mobile pink-text">(@result.Result)</td>
+                                            <td class="text-end hide-in-mobile">(@result.Result)</td>
                                         }
                                         else
                                         {
-                                            <td class="text-end hide-in-mobile pink-text">(-)</td>
+                                            <td class="text-end hide-in-mobile">(-)</td>
                                         }
                                     }
                                 }
-                                <td class="text-end">@p.DiscountedPoints <span class="pink-text">(@p.CurrentLeaguePoints)</span></td>
+                                <td class="text-end">@p.DiscountedPoints @*<span class="pink-text">(@p.CurrentLeaguePoints)</span>*@</td>
                             </tr>
                         }
                         count++;

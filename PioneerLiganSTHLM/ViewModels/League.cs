@@ -2,7 +2,7 @@
 {
     public class League
     {
-        public Models.League LeagueModel { get; set; } = new Models.League();
+        public string Name { get; set; } = "";
         public List<Models.Event> Events { get; set; } = new List<Models.Event>();
         public List<Models.Player> Players { get; set; } = new List<Models.Player>();
         public List<Models.EventResult> Results { get; set; } = new List<Models.EventResult>();
