@@ -37,3 +37,4 @@ msbuild.wrn
 .vs/
 /.vs/PioneerLiganSTHLM/FileContentIndex/*.vsidx
 /PioneerLiganSTHLM/ScaffoldingReadMe.txt
+/PioneerLiganSTHLM/wwwroot/js/typeahead.bundle.js

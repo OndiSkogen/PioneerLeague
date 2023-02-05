@@ -12,15 +12,15 @@ builder.Services.AddRazorPages();
 builder.Services.AddDbContext<PioneerLiganSTHLMContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("PioneerLiganSTHLMContext") ?? throw new InvalidOperationException("Connection string 'PioneerLiganSTHLMContext' not found.")));
 
-builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
-    .AddEntityFrameworkStores<PioneerLiganSTHLMContext>();
+//builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+//    .AddEntityFrameworkStores<PioneerLiganSTHLMContext>();
 
-builder.Services.AddAuthorization(options =>
-{
-    options.FallbackPolicy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
-});
+//builder.Services.AddAuthorization(options =>
+//{
+//    options.FallbackPolicy = new AuthorizationPolicyBuilder()
+//        .RequireAuthenticatedUser()
+//        .Build();
+//});
 
 var app = builder.Build();
 

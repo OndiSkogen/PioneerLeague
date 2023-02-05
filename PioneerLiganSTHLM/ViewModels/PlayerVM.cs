@@ -58,8 +58,12 @@ namespace PioneerLiganSTHLM.ViewModels
 
         private HtmlString BuildStatBox()
         {
-            HtmlString returnString = new HtmlString(string.Format(@"<a href='#' class='player-stats green-text' data-bs-toggle='tooltip' data-bs-html='true'
-                           data-bs-title='Lifetime stats:<br>Points: {0}<br>Wins: {1}<br>Ties: {2}<br>Losses: {3}<br>Average points: {4}'>{5}</a>", LifeTimePoints, Wins, Ties, Losses, AvgPoints.ToString("0.00"), Name));
+            float playedMatches = Wins + Ties + Losses;
+            float winPercentage = (Wins / playedMatches) * 100;
+            HtmlString returnString = new HtmlString(string.Format(@"<button href='abc' class='player-stats' data-bs-toggle='tooltip' data-bs-html='true'
+                            data-bs-placement='left' data-bs-title='Lifetime stats:<br>Points: {0}<br>Wins: {1}<br>Ties: {2}<br>Losses: {3}<br>Average points: {4}<br>
+                            Win %: {5}%'>{6}</button>",
+                           LifeTimePoints, Wins, Ties, Losses, AvgPoints.ToString("0.00"), winPercentage.ToString("0.00"), Name));
 
             return returnString;
         }
@@ -95,6 +99,10 @@ namespace PioneerLiganSTHLM.ViewModels
                 if (returnResults.Contains(r))
                 {
                     r.CountThis = true;
+                }
+                else
+                {
+                    r.CountThis = false;
                 }
 
                 if (r.CountThis)

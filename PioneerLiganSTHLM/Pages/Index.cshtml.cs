@@ -31,28 +31,11 @@ namespace PioneerLiganSTHLM.Pages
 
                 foreach (var league in Leagues)
                 {
-                    var events = from e in _context.Event select e;
+                    var events = from e in _context.Event where e.LeagueID == league.ID select e;
                     var eventResults = from e in _context.EventResult select e;
                     var players = from p in _context.Player select p;
 
-                    var tempLeague = new ViewModels.League();
-
-                    tempLeague.Events = events.Where(i => i.LeagueID == league.ID).OrderBy(ev => ev.EventNumber).ToList();
-
-
-                    tempLeague.Players = players.ToList();
-
-                    foreach (var ev in tempLeague.Events)
-                    {
-                        var tempResults = new List<Models.EventResult>();
-
-                        tempResults.AddRange(eventResults.Where(i => i.EventId == ev.ID).OrderBy(p => p.Placement));
-                        tempLeague.Results.AddRange(eventResults.Where(i => i.EventId == ev.ID).OrderBy(p => p.Placement));
-
-                        tempLeague.LeagueEventVMs.Add(new LeagueEvent { Date = ev.Date, LeagueID = ev.LeagueID, EventNumber = ev.EventNumber, Results = tempResults, cssId = "collapse" + ev.ID });
-                    }
-
-                    tempLeague.LeagueEventVMs = tempLeague.LeagueEventVMs.OrderBy(d => d.Date).ToList();
+                    var tempLeague = new ViewModels.League(events.ToList(), players.ToList(), eventResults.ToList(), league);
 
                     foreach (var player in tempLeague.Players)
                     {
@@ -60,12 +43,25 @@ namespace PioneerLiganSTHLM.Pages
                         tempLeague.PlayersVMs.Add(tempPlayer);                        
                     }
 
-                    tempLeague.PlayersVMs = tempLeague.PlayersVMs.OrderByDescending(p => p.DiscountedPoints).ThenByDescending(p => p.FourZero).ThenByDescending(p => p.ThreeZeroOne)
+                    tempLeague.PlayersVMs = tempLeague.PlayersVMs.Where(p => p.CurrentLeaguePoints > 0).OrderByDescending(p => p.DiscountedPoints).ThenByDescending(p => p.FourZero).ThenByDescending(p => p.ThreeZeroOne)
                             .ThenByDescending(p => p.ThreeOne).ThenByDescending(p => p.TuTu).ThenByDescending(p => p.Events).ToList();
 
                     LeagueVMs.Add(tempLeague);
                 }
             }            
+        }
+
+        public JsonResult OnGetPlayerNames()
+        {
+            var players = from p in _context.Player select p;
+            List<string> playerNames = new List<string>();
+
+            foreach (var p in players)
+            {
+                playerNames.Add(p.Name);
+            }
+
+            return new JsonResult(playerNames);
         }
     }
 }

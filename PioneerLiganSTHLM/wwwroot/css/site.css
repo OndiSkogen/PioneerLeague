@@ -437,7 +437,15 @@ ol {
     color: #099383;
 }
 
+green-text a {
+    color: #099383 !important;
+}
+
 .blue-text, .blue-text:hover {
+    color: #166b8c;
+}
+
+blue-text .player-stats {
     color: #166b8c;
 }
 
@@ -445,8 +453,40 @@ ol {
     color:hotpink;
 }
 
-.player-stats {
+.blue-text > .player-stats {
     text-decoration: none;
+    color: #166b8c;
+}
+
+.green-text > .player-stats {
+    text-decoration: none;
+    color: #099383;
+}
+
+.green-text > button {
+    background-color: transparent;
+    border-width: 0;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    padding: 0;
+}
+
+.blue-text > button {
+    background-color: transparent;
+    border-width: 0;
+    font-family: inherit;
+    font-size: inherit;
+    font-style: inherit;
+    font-weight: inherit;
+    line-height: inherit;
+    padding: 0;
+}
+
+.winners {
+    color: #981ee4;
 }
 
 @media screen and (max-width: 768px) {
