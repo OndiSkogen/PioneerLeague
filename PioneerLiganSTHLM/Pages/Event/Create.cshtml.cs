@@ -57,8 +57,6 @@ namespace PioneerLiganSTHLM.Pages.Event
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
-
-            //return RedirectToPage("./Index");
             SelectedLeague = int.Parse(Request.Form["league-id"]);
 
             if (!ModelState.IsValid || _context.Event == null || _context.EventResult == null || _context.Player == null || SelectedLeague == 0)
@@ -71,8 +69,6 @@ namespace PioneerLiganSTHLM.Pages.Event
             Event.LeagueID = SelectedLeague;
             _context.Event.Add(Event);
             await _context.SaveChangesAsync();
-
-            //UpdateEvent();
 
             var doc = new HtmlDocument();
             doc.LoadHtml(HtmlContent);
