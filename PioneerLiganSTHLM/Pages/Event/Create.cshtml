@@ -8,7 +8,7 @@
     var selectedLeague = Model.SelectedLeague;
     string leagueName = string.Empty;
 
-    if (selectedLeague != 0) 
+    if (selectedLeague != 0)
     {
         leagueName = Model.Leagues.Where(i => i.ID == selectedLeague).FirstOrDefault().Name;
     }
@@ -20,13 +20,13 @@
 <hr />
 <div class="row">
     <div class="col-md-12">
-        <form method="post">
+        @*<form autocomplete="off" method="post">
             <div class="form-group">
                 <select id="select-league" name="league-select" asp-items="@(new SelectList(Model.Leagues,"ID","Name"))" class="form-select">
                     <option value="" selected disabled>---Select League---</option>
                 </select>
             </div>
-            @if (selectedLeague != 0) 
+            @if (selectedLeague != 0 && leagueName != null)
             {
                 <div class="pt-2">
                     <p>
@@ -87,7 +87,7 @@
                         </div>
                     </div>
                 </div>
-            </div>         
+            </div>
 
             @for (int i = 1; i < 33; i++)
             {
@@ -95,7 +95,7 @@
                     <div class="col-sm-3 mb-2">
                         <div class="form-group">
                             <div class="player-name">
-                                <input type="text" class="form-control" name="@Model.NamePlayer(i)" />
+                                <input id="myInput" type="text" class="form-control" name="@Model.NamePlayer(i)" />
                             </div>
                         </div>
                     </div>
@@ -142,11 +142,44 @@
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
             </div>
+        </form>*@
+
+        <form method="post">
+            <div class="form-group">
+                <select id="select-league" name="league-select" asp-items="@(new SelectList(Model.Leagues,"ID","Name"))" class="form-select">
+                    <option value="" selected disabled>---Select League---</option>
+                </select>
+            </div>
+            @if (selectedLeague != 0 && leagueName != null)
+            {
+                <div class="pt-2">
+                    <p>
+                        Selected league: @leagueName
+                    </p>
+                </div>
+            }
+            <div class="form-group">
+                <label asp-for="Event.Date" class="control-label"></label>
+                <input asp-for="Event.Date" class="form-control" />
+                <span asp-validation-for="Event.Date" class="text-danger"></span>
+            </div>
+            <div class="form-group mb-3">
+                <label asp-for="Event.EventNumber" class="control-label"></label>
+                <input asp-for="Event.EventNumber" class="form-control" value="@numberOfEvents" />
+                <span asp-validation-for="Event.EventNumber" class="text-danger"></span>
+            </div>
+            @Html.TextAreaFor(m => m.HtmlContent)
+            <div class="form-group" hidden>
+                <input name="league-id" type="text" value="@selectedLeague" />
+            </div>
+            <button type="submit">Submit</button>
         </form>
     </div>
 </div>
 <div hidden id="selected-league">@selectedLeague</div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }

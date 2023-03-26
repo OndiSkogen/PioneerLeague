@@ -9,6 +9,8 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using PioneerLiganSTHLM.Data;
 using PioneerLiganSTHLM.Models;
+using HtmlAgilityPack;
+using System.Text.RegularExpressions;
 
 namespace PioneerLiganSTHLM.Pages.Event
 {
@@ -22,7 +24,7 @@ namespace PioneerLiganSTHLM.Pages.Event
             _context = context;
         }
 
-        
+
         public IActionResult OnGet(string? selectedId)
         {
             LoadData();
@@ -41,6 +43,9 @@ namespace PioneerLiganSTHLM.Pages.Event
         }
 
         [BindProperty]
+        public string HtmlContent { get; set; } = string.Empty;
+
+        [BindProperty]
         public Models.Event Event { get; set; } = default!;
         public List<Models.Event> Events { get; set; } = new List<Models.Event>();
         public List<Models.Event> DisplayEvents { get; set; } = new List<Models.Event>();
@@ -52,6 +57,8 @@ namespace PioneerLiganSTHLM.Pages.Event
         // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
         public async Task<IActionResult> OnPostAsync()
         {
+
+            //return RedirectToPage("./Index");
             SelectedLeague = int.Parse(Request.Form["league-id"]);
 
             if (!ModelState.IsValid || _context.Event == null || _context.EventResult == null || _context.Player == null || SelectedLeague == 0)
@@ -65,21 +72,72 @@ namespace PioneerLiganSTHLM.Pages.Event
             _context.Event.Add(Event);
             await _context.SaveChangesAsync();
 
-            for (int i = 1; i < 33; i++)
+            //UpdateEvent();
+
+            var doc = new HtmlDocument();
+            doc.LoadHtml(HtmlContent);
+
+            // Select the table element you want to extract data from
+            var table = doc.DocumentNode.SelectSingleNode("//table");
+
+            // Extract the table rows
+            var rows = table.SelectNodes(".//tr");
+
+            // Loop through each row and extract the data from the cells
+            foreach (var row in rows)
             {
-                if (Request.Form["player" + i] == string.Empty)
-                {
-                    continue;
-                }
-                
+                // Extract the cells in this row
+                var cells = row.SelectNodes(".//td");
+
                 var eventResult = new Models.EventResult();
-                eventResult.PlayerName = Request.Form["player" + i];
-                eventResult.Points = int.Parse(Request.Form["points" + i]);
-                eventResult.OMW = float.Parse(Request.Form["omw" + i]);
-                eventResult.GW = float.Parse(Request.Form["gw" + i]);
-                eventResult.OGW = float.Parse(Request.Form["ogw" + i]);
-                eventResult.Placement = int.Parse(Request.Form["placement" + i]);
                 eventResult.EventId = Event.ID;
+
+                // Loop through each cell and extract the data
+                if (cells != null)
+                {
+                    int i = 0;
+                    foreach (var cell in cells)
+                    {
+                        // Extract the inner text of the cell
+                        var cellText = cell.InnerText;
+                        string[] temp;
+
+                        // Do something with the cell text
+                        if (cellText != null)
+                        {
+                            switch (i)
+                            {
+                                case 0:
+                                    eventResult.Placement = int.Parse(cellText);
+                                    break;
+                                case 1:
+                                    eventResult.PlayerName = ExtractPlayerName(cellText);
+                                    break;
+                                case 2:
+                                    eventResult.Points = int.Parse(cellText);
+                                    break;
+                                case 3:
+                                    break;
+                                case 4:
+                                    temp = cellText.Split('%');
+                                    eventResult.OMW = float.Parse(temp[0]);
+                                    break;
+                                case 5:
+                                    temp = cellText.Split('%');
+                                    eventResult.GW = float.Parse(temp[0]);
+                                    break;
+                                case 6:
+                                    temp = cellText.Split('%');
+                                    eventResult.OGW = float.Parse(temp[0]);
+                                    break;
+                                default:
+                                    break;
+                            }
+                        }
+
+                        i++;
+                    }
+                }
 
                 var playerExists = Players.Where(n => n.Name == eventResult.PlayerName).ToList();
                 if (playerExists.Any())
@@ -118,6 +176,47 @@ namespace PioneerLiganSTHLM.Pages.Event
             }
 
             return RedirectToPage("./Index");
+        }
+
+        private string ExtractPlayerName(string cellText)
+        {
+            string nameToExtract = string.Empty;
+            cellText = cellText.Trim();
+            string[] splits = cellText.Split(' ');
+
+            foreach (var str in splits)
+            {
+                if (IsOnlyLetters(str))
+                {
+                    nameToExtract += str + " ";
+                }
+            }
+            nameToExtract = nameToExtract.Trim();
+            nameToExtract = HandleEdgeCases(nameToExtract);
+
+            return nameToExtract;
+        }
+
+        private string HandleEdgeCases(string edgeCase)
+        {
+            switch (edgeCase.ToLower())
+            {
+                case "bo":
+                    return "Bo Strandin Pers";
+                case "österberg":
+                    return "Fredrik Österberg";
+                default:
+                    return edgeCase;
+            }
+        }
+
+        private bool IsOnlyLetters(string cellText)
+        {
+            string pattern = "^([A-Z]|Å|Ä|Ö|Í|Á)([a-z]|å|ä|ö|í|á)+$";
+            Regex regex = new Regex(pattern);
+            bool containsOnlyLetters = regex.IsMatch(cellText);
+
+            return containsOnlyLetters;
         }
 
         private void LoadData()
